@@ -1,11 +1,12 @@
 #! /usr/bin/env python
-
+from weasyprint import HTML
 import os, sys, getopt, random, subprocess
 import pathlib
 from bs4 import BeautifulSoup
 import argparse
 import shutil
 from shutil import copyfile
+import time
 
 cwd =  pathlib.Path.cwd()
 pathlib.Path( cwd / 'srcdocs' ).mkdir( parents=True, exist_ok=True )
@@ -14,10 +15,13 @@ pathlib.Path( cwd / 'build' / 'clean' ).mkdir( parents=True, exist_ok=True )
 dest_path = cwd / 'build' / 'clean'
 
 def main(argv):
+    timestr = time.strftime( "%Y-%m%d-%H%M%S" )
+    # filename = "output/hdsa%s.mp4" %
+
     parser = argparse.ArgumentParser(description='Generate H&D Book')
     parser.add_argument('-c','--clean', help='Cleanup input HTML files. Removes unwanted html & css. Saves files in srcdocs/clean', action='store_true' )
     parser.add_argument('-b','--build', help='Combines the files in build/clean (created by running this script with -c option) and creates a PDF', action='store_true' )
-    parser.add_argument('-o','--output', help='Output pdf filename. Default: book.pdf', default="book.pdf" )
+    parser.add_argument('-o','--output', help='Output pdf filename. Default: book.pdf', default="book-" + timestr + ".pdf" )
     args = parser.parse_args()
 
     if args.build:
@@ -76,10 +80,25 @@ def build( output_filename ):
     book_html = BeautifulSoup( content, 'html.parser' )
     container = book_html.body.div
 
+    width = random.randint( 1, 2 )
+    count = 0
+    print( "NEW width %d, count %d" % ( width, count ) );
     for idx, file in enumerate( sorted( dest_path.rglob( '*.html' ) ) ):
         with open( file, 'r' ) as src_file:
             content = src_file.read()
             body = formatDocument( content, idx )
+            if width == 2:
+                count += 1
+                print( "-width %d, count %d" % ( width, count ) );
+                if count > 1:
+                    width = random.randint( 1, 2 )
+                    count = 0
+                    print( "NEW width %d, count %d" % ( width, count ) );
+            else:
+                width = random.randint( 1, 2 )
+                print( "NEW width %d, count %d" % ( width, count ) );
+            body[ 'class' ] = ' width-' + str( width ) + " " + "article-" + str( idx )
+            body[ 'style' ] = 'page: article-' + str( idx )
             container.append( body )
 
     dest_file = pathlib.Path.cwd() / 'build' / 'book.html'
@@ -89,8 +108,14 @@ def build( output_filename ):
     pdf_path = pathlib.Path.cwd() / 'build' / output_filename
     print( str( pdf_path ) )
 
-    subprocess.Popen( [ 'weasyprint %s %s' % ( dest_file, pdf_path ) ], shell = True ) # add to suppress output: , stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
+    HTML( dest_file ).write_pdf( pdf_path )
+    from subprocess import call
+    call(["open", pdf_path ])
+    # subprocess.Popen( [ 'weasyprint %s %s' % ( dest_file, pdf_path ) ], shell = True ) # add to suppress output: , stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
 
+    # from PdfGenerator import PdfGenerator
+    # pdf = PdfGenerator( str( HTML( dest_file ) ) )
+    # pdf.render_pdf()
 
 import re
 
@@ -98,11 +123,11 @@ def formatDocument( content, idx ):
     soup = BeautifulSoup( content, 'html.parser' )
     body = soup.body
 
-    wrapper = soup.new_tag("article")
+    wrapper = soup.new_tag( "article" )
     body.wrap( wrapper )
     # transform the body to an article tag and copy it to the output doc
     body.name = 'div'
-    body[ 'class' ] = 'columns cols-' + str( random.randint( 2, 4 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
+    body[ 'class' ] = 'columns cols-' + str( random.randint( 4, 6 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
     # scoped does work in Weasyprint regrettably so we add an id to the article and suffix the css
     body[ 'id' ] = 'article-' + str( idx )
     for header in body.select( 'h1, h2' ):

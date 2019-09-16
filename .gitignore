@@ -5,3 +5,4 @@ tests
 srcdocs/clean
 srcdocs
 build
+__pycache__
