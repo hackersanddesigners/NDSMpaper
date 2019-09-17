@@ -81,6 +81,13 @@ def build( output_filename ):
     book_html = BeautifulSoup( content, 'html.parser' )
     container = book_html.body.div
 
+    style = ''
+    for i in range( 0, 100) :
+        style += r'.article-rnd p:nth-of-type({}){{ padding-left: {}%; }}'.format( i, random.randint(0,50) )
+    style_tag = book_html.new_tag( "style" )
+    style_tag.string = style;
+    book_html.body.insert( 0, style_tag )
+
     width = random.randint( 1, 2 )
     count = 0
     print( "NEW width %d, count %d" % ( width, count ) );
@@ -127,8 +134,8 @@ def formatDocument( content, idx ):
     body.wrap( wrapper )
     # transform the body to an article tag and copy it to the output doc
     body.name = 'div'
-    body[ 'class' ] = 'columns cols-' + str( random.randint( 4, 6 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
-    # scoped does work in Weasyprint regrettably so we add an id to the article and suffix the css
+    body[ 'class' ] = 'article-rnd xcolumns xcols-' + str( random.randint( 4, 6 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
+    # scoped does work in Weasyprint fortunately so we add an id to the article and suffix the css
     body[ 'id' ] = 'article-' + str( idx )
     for header in body.select( 'h1, h2' ):
         rndHeadingFont( header )
@@ -136,14 +143,14 @@ def formatDocument( content, idx ):
         wrapper.insert( 0, h1 ) # place the h1 outside of the article so it can be fullwidth
     for img in soup.select( 'img' ):
         img[ 'src' ] = 'clean/' + img[ 'src' ] # adjust image path
-    rndDots( soup, idx )
+    # rndDots( soup, idx )
 
     # get the style tag from head and turn it into a style scoped to the article
     # this isnt going to be pretty...
 
     for style in soup.head.find_all( 'style' ):
-        replaced = re.sub("{", "{\n", style.string) # force everything on a own line.
-        replaced = re.sub("(?!;)}", ";}\n", replaced) # sometimes the semicolon is missing
+        replaced = re.sub("{", "{\n", style.string) # force everything on its own line.
+        replaced = re.sub("(?!;)}", ";}\n", replaced) # sometimes the semicolon is missing. fix that.
         replaced = re.sub("([;|}])", "\g<1>\n", replaced) # more new lines
         lines = re.split("\n+", replaced)
         output = ''

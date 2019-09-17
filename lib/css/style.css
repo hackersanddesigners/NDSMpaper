@@ -1,87 +1,7 @@
 @import "bodyfonts.css";
 @import "headingfonts.css";
 
-/* General styling */
-*{
-	box-sizing: border-box;
-}
-
-body{
-	margin: 0;
-	font-size: 8pt;
-	columns: 2;
-	column-gap: 16cm;
-}
-
-h1{
-	font-size: 70px;
-	text-align: center;
-}
-
-h1, h2 {
-	page-break-before: avoid;
-	page-break-after: avoid;
-}
-
-p {
-	orphans:3;
-	widows:3;
-}
-
-a {
-	color: black;
-	text-decoration: none;
-	word-break: break-word;
-	hyphens: auto;
-}
-
-img {
-	width: 100%;
-	height: auto !important;
-}
-
-/* div.test{
-	color: red;
-	font-size: 300px;
-} */
-
-article{
-	page-break-before: avoid;
-	page-break-after: avoid;
-}
-
-/* Column classes get generated in Python */
-.columns{
-	columns: 2;
-	column-fill: balance;
-	/*column-fill: auto;*/ /* try these values: auto | balance | balance-all */
-}
-
-.columns > p:first-of-type {
-	margin-top: 0;
-}
-
-.columns > div:first-of-type > p {
-    display: none;
-}
-
-.columns.cols-3{
-	columns: 3;
-}
-
-.columns.cols-4{
-	columns: 4;
-}
-
-.columns.cols-5{
-	columns: 5;
-}
-
-.columns.cols-6{
-	columns: 6;
-}
-
-/* grap the document titles and store in variable */
+/* grab the document titles and store in variable */
 article > h1{
 	string-set: doctitle content();
 }
@@ -89,7 +9,7 @@ article > h1{
 /* Default left, right, top, bottom margin is 2cm */
 @page {
 	margin: 2cm;
-	size: 520mm 380mm; // spread size
+	size: 260mm 380mm;
 	marks: crop cross; /* comment out to remove the crop marks */
 	border: 1px solid black;
 	padding: 1cm;
@@ -117,10 +37,88 @@ article > h1{
 	}
 }
 
+/* General styling */
+*{
+	box-sizing: border-box;
+}
 
-/* okay here we go. * The dots */
+body{
+	margin: 0;
+	font-size: 8pt;
+}
+
+h1{
+	font-size: 70px;
+	text-align: center;
+	border-bottom: 1px solid black;
+}
+
+h1, h2 {
+	page-break-before: avoid;
+	page-break-after: avoid;
+}
+
 article{
-	/* position: relative; */
+	page-break-before: avoid;
+	page-break-after: avoid;
+}
+
+p {
+	orphans:3;
+	widows:3;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+	word-break: break-word;
+	hyphens: auto;
+}
+
+img {
+	width: 100%;
+	height: auto !important;
+}
+
+/* div.test{
+	color: red;
+	font-size: 300px;
+} */
+
+
+
+/* Column classes get generated in Python */
+.columns{
+	columns: 2;
+	/*column-fill: auto;*/ /* try these values: auto | balance | balance-all */
+}
+
+.columns > p:first-of-type {
+	margin-top: 0;
+}
+
+.columns > div:first-of-type > p {
+    display: none;
+}
+
+.columns.cols-3{
+	columns: 3;
+}
+
+.columns.cols-4{
+	columns: 4;
+}
+
+.columns.cols-5{
+	columns: 5;
+}
+
+.columns.cols-6{
+	columns: 6;
+}
+
+div.article-rnd{
+	columns: 1;
 }
 
 article p.hasdot:before{
@@ -134,13 +132,4 @@ article p.hasdot:before{
 	border-radius: 100%;
 	display: block;
 	z-index: -100;
-}
-
-.sidebar {
-    position: absolute;
-    width: 33%;
-    transform: translateX(-50%);
-    position: absolute;
-    left: 50%;
-	padding: 1cm;
 }
