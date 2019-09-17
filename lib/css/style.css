@@ -11,117 +11,41 @@ body{
 	font-size: 8pt;
 }
 
-
 h1{
 	font-size: 70px;
 	text-align: center;
 }
 
 h1, h2 {
-	/* page-break-after: avoid;
-	page-break-before: always; */
-
-	/* word-break: break-all; */
-	/* word-break: break-word;
-	hyphens: auto; */
-
 	page-break-before: avoid;
 	page-break-after: avoid;
 }
 
-@page :nth(2n+1) { background: green; } /* Odd pages */
-@page :left { background: blue; } /* Event pages */
-@page :left article { background: pink; } /* Event pages */
-/* @page :nth(2n) {
-	background: #ffff00;
-	article{
-		border: 20px solid blue;
-	}
-}*/ /* Odd pages */
-
 p {
 	orphans:3;
 	widows:3;
-    /* word-break: break-word; */
 }
 
 a {
 	color: black;
 	text-decoration: none;
-	/* word-break: break-all; *//* force long urls to break into lines */
 	word-break: break-word;
 	hyphens: auto;
 }
 
 img {
-	/* max-width: 100%; */
 	width: 100%;
 	height: auto !important;
-	column-span: all;
-	/* position: absolute; */
-	/* left: 0; */
-	/* margin-left: -3cm; */
-	/* float: right; */
 }
 
-div.test{
+/* div.test{
 	color: red;
 	font-size: 300px;
-}
-/*
-article footer {
-	position: absolute;
-	bottom: 0;
-}
-
-footer [id|=footnote]::first-letter{
-	vertical-align: super;
 } */
 
 article{
-
-		page-break-before: avoid;
-		page-break-after: avoid;
-	/* page-break-after: avoid;
-	page-break-before: always; */
-	/* min-height: 100vh;
-	position: relative; */
-	/* orphans:3;
-	widows:3; */
-	/* border: 10px solid pink; */
-	/* width: 75%; */
-}
-
-@page:left {
-	/* margin-left: 25%; */
-	/* article{
-		width: 75%;
-		right: 0;
-		position: absolute;
-		color: blue !important;
-	} */
-}
-
-@page:right{
-	/* margin-right: 25%; */
-	/* article{
-		width: 75%;
-		color: red !important;
-	} */
-}
-
-
-@page:right article{
-	width: 75%;
-	color: red !important;
-	/* right: 0;
-	position: absolute; */
-}
-
-
-article.width-2{
-	/* width: 50%;
-	float: left; */
+	page-break-before: avoid;
+	page-break-after: avoid;
 }
 
 /* Column classes get generated in Python */
@@ -154,11 +78,6 @@ article.width-2{
 	columns: 6;
 }
 
-@page article-2 {
-	background-color: red;
-	next: news;
-}
-
 /* grap the document titles and store in variable */
 article > h1{
 	string-set: doctitle content();
@@ -169,60 +88,47 @@ article > h1{
 	margin: 2cm;
 	size: 260mm 380mm;
 	marks: crop cross; /* comment out to remove the crop marks */
-	border: 1px solid red;
-	/* @top-center {
-		content: string(doctitle);
-		font-family: 'NotCourierSans';
-		font-size: 9pt;
-	} */
-
-	@bottom-center {
-  		font-size: 9pt;
-		/* content: "Page " counter(page) " of " counter(pages); */
-		content: counter(page);
-		font-family: 'NotCourierSans';
-	}
+	border: 1px solid black;
+	padding: 1cm;
 }
 
 /* Default left, right, top, bottom margin is 2cm */
 @page:left {
-	@left-middle{
+	padding-right: 20%;
+	@top-left{
 		content: string(doctitle); /* use the h1 content value as title heading */
 		font-family: 'NotCourierSans';
-		font-size: 20pt;
-		transform: rotate( -90deg );
-		/* width: 800px;
-		height: 200px; */
+		font-size: 10pt;
+		/* transform: rotate( -90deg ); */
 		white-space: nowrap;
-		/* outline: 1px solid red; */
 	}
 }
 
 /* Default left, right, top, bottom margin is 2cm */
 @page:right {
-	@right-middle{
-		content: string(doctitle); /* use the h1 content value as title heading */
+	padding-left: 20%;
+	@top-right{
+		font-size: 9pt;
+		content: counter(page);
 		font-family: 'NotCourierSans';
-		font-size: 20pt;
-		transform: rotate( 90deg );
-		/* width: 800px;
-		height: 200px; */
-		white-space: nowrap;
-		/* outline: 1px solid red; */
 	}
 }
 
 
+/* okay here we go. * The dots */
+article{
+	/* position: relative; */
+}
 
-/* testing */
-
-
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    height: 2.5cm;
-    width: 100%;
-    background-color: #1a1a1a;
+article p.hasdot:before{
+	content: '';
+	position: absolute;
+	top: 20%;
+	left: 44%;
+	width: 2cm;
+	height: 2cm;
+	background: yellow;
+	border-radius: 100%;
+	display: block;
+	z-index: -100;
 }

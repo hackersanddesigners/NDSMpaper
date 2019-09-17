@@ -7,6 +7,7 @@ import argparse
 import shutil
 from shutil import copyfile
 import time
+from subprocess import call
 
 cwd =  pathlib.Path.cwd()
 pathlib.Path( cwd / 'srcdocs' ).mkdir( parents=True, exist_ok=True )
@@ -109,7 +110,6 @@ def build( output_filename ):
     print( str( pdf_path ) )
 
     HTML( dest_file ).write_pdf( pdf_path )
-    from subprocess import call
     call(["open", pdf_path ])
     # subprocess.Popen( [ 'weasyprint %s %s' % ( dest_file, pdf_path ) ], shell = True ) # add to suppress output: , stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
 
@@ -136,6 +136,7 @@ def formatDocument( content, idx ):
         wrapper.insert( 0, h1 ) # place the h1 outside of the article so it can be fullwidth
     for img in soup.select( 'img' ):
         img[ 'src' ] = 'clean/' + img[ 'src' ] # adjust image path
+    rndDots( soup, idx )
 
     # get the style tag from head and turn it into a style scoped to the article
     # this isnt going to be pretty...
@@ -157,14 +158,32 @@ def formatDocument( content, idx ):
                     line = '#article-' + str( idx ) + " " + line # prefix with article id
                 output += "\n" + line
         style.string = output
-        style[ 'scoped' ] = 'scoped' # scoped does work in Weasyprint regrettably
+        style[ 'scoped' ] = 'scoped' # scoped does work in Weasyprint fortunately
         wrapper.insert( 0, style )
 
     return wrapper
 
+def rndDots( soup, idx ):
+    # pick some random paragraph to :before the dots to
+    i = 0
+    ps = soup.select( 'p' )
+    picked = random.choices( ps, k=12 ) # the k is a bit of a magic number
+    for p in picked:
+        p[ 'class' ] = 'hasdot';
+        style = r'.article-{} p.has-dot:nth-of-type({}):before{{ left: {}%; top: {}%; \}}'.format( idx, i, random.randint(5,95),  random.randint(5,95) )
+        # style = ".article-"+str(idx)+" p.hasdot:nth-of-type(" + str(i) +"):before{ left: " + str( random.randint(5,95) ) + "%; top: " + str( random.randint(5,95) ) + "%; }"
+        style_tag = soup.new_tag("style")
+        style_tag[ 'scoped' ] = 'scoped'
+        style_tag.string = style;
+        p.insert( 0, style_tag )
+        i += 1
+
 def rndHeadingFont( header ):
     header[ 'class' ] = "headingfont-" + str( random.randint( 1, 17 ) )
     return header
+
+def generateDotCss():
+    str = ""
 
 if __name__ == "__main__":
    main( sys.argv[ 1: ] )
