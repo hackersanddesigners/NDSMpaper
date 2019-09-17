@@ -170,7 +170,7 @@ def rndDots( soup, idx ):
     picked = random.choices( ps, k=12 ) # the k is a bit of a magic number
     for p in picked:
         p[ 'class' ] = 'hasdot';
-        style = r'.article-{} p.has-dot:nth-of-type({}):before{{ left: {}%; top: {}%; \}}'.format( idx, i, random.randint(5,95),  random.randint(5,95) )
+        style = r'.article-{} p.hasdot:nth-of-type({}):before{{ left: {}%; top: {}%; }}'.format( idx, i, random.randint(5,95),  random.randint(5,95) )
         # style = ".article-"+str(idx)+" p.hasdot:nth-of-type(" + str(i) +"):before{ left: " + str( random.randint(5,95) ) + "%; top: " + str( random.randint(5,95) ) + "%; }"
         style_tag = soup.new_tag("style")
         style_tag[ 'scoped' ] = 'scoped'

@@ -9,6 +9,8 @@
 body{
 	margin: 0;
 	font-size: 8pt;
+	columns: 2;
+	column-gap: 16cm;
 }
 
 h1{
@@ -51,6 +53,7 @@ article{
 /* Column classes get generated in Python */
 .columns{
 	columns: 2;
+	column-fill: balance;
 	/*column-fill: auto;*/ /* try these values: auto | balance | balance-all */
 }
 
@@ -86,7 +89,7 @@ article > h1{
 /* Default left, right, top, bottom margin is 2cm */
 @page {
 	margin: 2cm;
-	size: 260mm 380mm;
+	size: 520mm 380mm; // spread size
 	marks: crop cross; /* comment out to remove the crop marks */
 	border: 1px solid black;
 	padding: 1cm;
@@ -131,4 +134,13 @@ article p.hasdot:before{
 	border-radius: 100%;
 	display: block;
 	z-index: -100;
+}
+
+.sidebar {
+    position: absolute;
+    width: 33%;
+    transform: translateX(-50%);
+    position: absolute;
+    left: 50%;
+	padding: 1cm;
 }
