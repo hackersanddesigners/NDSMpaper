@@ -1,10 +1,11 @@
-# H&D book 2018
+# NDSM newspaper 2010 generator
 
 ## Description
 Script to auto-generate a book from a bunch of documents downloaded from Google
 docs as HTML files. The script will remove most of the CSS and combine all
 the documents in one file: build/book.html. Then Weasyprint converts the
-HTML to PDF. 
+HTML to PDF.
+The fonts used are all open source fonts.
 
 ## Installation
 
@@ -33,23 +34,36 @@ or add those to the shells .rc file
 
 ## Usage
 
-Export the documents from Google docs and place in ./srcdocs
+Export the documents as HTML (File > Download > HTML page...) from Google docs and place in ./srcdocs
 
 Run clean command
+---
+Google docs places a lot of representational css inline in the document.
+This command cleans most of that up. We only leave the font-weight and font-style
+rules because we actually need those.
+The cleaned documents will be placed in ./build/clean. Adjust those as needed.
 
-``` ./generate.sh -c ```
+``` python generate.py --clean ```
 
-This will place the cleaned documents in ./srcdocs/clean. Adjust as needed.
 
 Run build command
+---
+This will combine all the files in ./build/clean by getting the contents of the
+document body and wrapping that in an &lt;article&gt; tag.
+The combined document will be saved as  ./build/book.html and this file is used
+by Weasyprint to generate ./build/book.pdf
 
-``` ./generate.sh -b ```
+``` python generate.py --build ```
 
-That will generate ./build/book.html & run Weasyprint to generate ./build/book.pdf
 
-Set the output filename by adding
-``` ./generate.sh -b --output hdbook.pdf ```
+~optionally~
+Set the output filename by adding --output [filename]
+
+``` python generate.py --build --output ndsm_papger.pdf ```
 
 ## Resources
 https://www.w3.org/TR/css-page-3/#cascading-and-page-context
 https://www.smashingmagazine.com/2015/01/designing-for-print-with-css/
+
+## Fonts
+- Todo. Add links to font authors
