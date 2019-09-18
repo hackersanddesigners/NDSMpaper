@@ -82,31 +82,19 @@ def build( output_filename ):
     container = book_html.body.div
 
     style = ''
-    for i in range( 0, 100) :
-        style += r'.article-rnd p:nth-of-type({}){{ padding-left: {}%; }}'.format( i, random.randint(0,50) )
+    for j in range( 0, 10) :
+        for i in range( 0, 100) :
+            style += r'article:nth-of-type({}) .article-rnd p:nth-of-type({}){{ padding-left: {}%; }}'.format(j, i, random.randint(0,50) )
     style_tag = book_html.new_tag( "style" )
     style_tag.string = style;
     book_html.body.insert( 0, style_tag )
 
-    width = random.randint( 1, 2 )
-    count = 0
-    print( "NEW width %d, count %d" % ( width, count ) );
     for idx, file in enumerate( sorted( dest_path.rglob( '*.html' ) ) ):
         with open( file, 'r' ) as src_file:
             content = src_file.read()
             body = formatDocument( content, idx )
-            if width == 2:
-                count += 1
-                print( "-width %d, count %d" % ( width, count ) );
-                if count > 1:
-                    width = random.randint( 1, 2 )
-                    count = 0
-                    print( "NEW width %d, count %d" % ( width, count ) );
-            else:
-                width = random.randint( 1, 2 )
-                print( "NEW width %d, count %d" % ( width, count ) );
-            body[ 'class' ] = ' width-' + str( width ) + " " + "article-" + str( idx )
-            body[ 'style' ] = 'page: article-' + str( idx )
+            body[ 'class' ] = "article-" + str( idx )
+            # body[ 'style' ] = 'page: article-' + str( idx )
             container.append( body )
 
     dest_file = pathlib.Path.cwd() / 'build' / 'book.html'
@@ -134,7 +122,11 @@ def formatDocument( content, idx ):
     body.wrap( wrapper )
     # transform the body to an article tag and copy it to the output doc
     body.name = 'div'
-    body[ 'class' ] = 'article-rnd xcolumns xcols-' + str( random.randint( 4, 6 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
+    if random.randint(0,4) == 0:
+        body[ 'class' ] = 'article-rnd'
+    else:
+        body[ 'class' ] = 'columns cols-' + str( random.randint( 2, 6 ) ) + ' bodyfont-' + str( random.randint( 1, 5 ) )
+
     # scoped does work in Weasyprint fortunately so we add an id to the article and suffix the css
     body[ 'id' ] = 'article-' + str( idx )
     for header in body.select( 'h1, h2' ):
@@ -143,7 +135,7 @@ def formatDocument( content, idx ):
         wrapper.insert( 0, h1 ) # place the h1 outside of the article so it can be fullwidth
     for img in soup.select( 'img' ):
         img[ 'src' ] = 'clean/' + img[ 'src' ] # adjust image path
-    # rndDots( soup, idx )
+    rndDots( soup, idx )
 
     # get the style tag from head and turn it into a style scoped to the article
     # this isnt going to be pretty...
