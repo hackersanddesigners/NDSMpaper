@@ -1,5 +1,5 @@
-@import "bodyfonts.css";
-@import "headingfonts.css";
+/* @import "bodyfonts.css"; */
+/* @import "headingfonts.css"; */
 
 /* grab the document titles and store in variable */
 article > h1{
@@ -51,6 +51,11 @@ h1{
 	font-size: 70px;
 	text-align: center;
 	border-bottom: 1px solid black;
+}
+
+h2{
+	text-align: center;
+	/* column-span: all;; */
 }
 
 /* h1, h2 {
@@ -130,6 +135,17 @@ article p.hasdot:before{
 	height: 2cm;
 	background: yellow;
 	border-radius: 100%;
+	display: block;
+	z-index: -100;
+}
+
+article p.haslogo:before{
+	content: '';
+	position: absolute;
+	width: 150px;
+	height: 150px;
+	background-image: url( '../logos/image-2019-0919-131920-0.png' );
+	background-size: 100% 100%;
 	display: block;
 	z-index: -100;
 }
