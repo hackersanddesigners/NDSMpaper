@@ -1,4 +1,4 @@
-# NDSM newspaper 2010 generator
+# NDSM newspaper 2019 generator
 
 ## Description
 Script to auto-generate a book from a bunch of documents downloaded from Google
@@ -34,7 +34,7 @@ or add those to the shells .rc file
 
 ## Usage
 
-Export the documents as HTML (File > Download > HTML page...) from Google docs and place in ./srcdocs
+Export the documents as HTML (File &gt; Download &gt; HTML page...) from Google docs and place in ./srcdocs
 
 Run clean command
 ---
@@ -54,12 +54,12 @@ Run build command
 This will combine all the files in ./build/clean by getting the contents of the
 document body and wrapping that in an &lt;article&gt; tag.
 The combined document will be saved as  ./build/book.html and this file is used
-by Weasyprint to generate ./build/book-<date>.html and ./build/book-<date>.pdf
+by Weasyprint to generate ./build/book-&lt;date&gt;.html and ./build/book-&lt;date&gt;.pdf
 
 ``` python generate.py --build ```
 
 
-~optionally~
+*optionally*
 Set the output filename by adding --output [filename]
 
 ``` python generate.py --build --output ndsm_papger.pdf ```
@@ -67,7 +67,7 @@ Set the output filename by adding --output [filename]
 Create PDF from preexisting html
 ---
 This option allow for small text changes. To do that edit the generated
-/build/book-<date>.html and pass that to the --html flag
+/build/book-&lt;date&gt;.html and pass that to the --html flag
 
 ```python generate.sh --html book-2019-0920-143629.html```
 

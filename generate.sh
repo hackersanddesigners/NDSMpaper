@@ -11,19 +11,19 @@ src_path = cwd / 'srcdocs'
 pathlib.Path( cwd / 'build' / 'clean' ).mkdir( parents=True, exist_ok=True )
 dest_path = cwd / 'build' / 'clean'
 fromHTML = None
+timestr = ''
 
 def main(argv):
-    global src_path, fromHTML
+    global src_path, fromHTML, timestr
 
     timestr = time.strftime( "%Y-%m%d-%H%M%S" )
-    # filename = "output/hdsa%s.mp4" %
-
     parser = argparse.ArgumentParser(description='Generate H&D Book')
     parser.add_argument('-c','--clean', help='Cleanup input HTML files. Removes unwanted html & css. Saves files in srcdocs/clean', action='store_true' )
     parser.add_argument('-b','--build', help='Combines the files in build/clean (created by running this script with -c option) and creates a PDF', action='store_true' )
     parser.add_argument('-o','--output', help='Output filename (without extension). Default: book.pdf', default="book-" + timestr )
     parser.add_argument('-i','--input', help='Input folder containing the html files', default="srcdocs" )
     parser.add_argument('--html', help='Input html file (stored in /build)' )
+    parser.add_argument('--template', help='Template html file to use (store in /lib/)', default='template.html' )
     args = parser.parse_args()
 
     if args.input:
@@ -33,7 +33,7 @@ def main(argv):
         fromHTML = args.html
 
     if args.build or args.html:
-        build( args.output )
+        build( args.output, args.template )
     elif args.clean:
         cleanFiles()
 
@@ -83,9 +83,9 @@ def cleanFiles():
                 print( "Wrote build/clean/%s " % os.path.basename( dest_file.name ) )
 
 
-def build( output_filename ):
+def build( output_filename, template ):
     if not fromHTML:
-        template = pathlib.Path.cwd() / 'lib' / 'template.html'
+        template = pathlib.Path.cwd() / 'lib' / template
         with open( template, 'r' ) as book:
             content = book.read()
         book_html = BeautifulSoup( content, 'html.parser' )
@@ -95,9 +95,10 @@ def build( output_filename ):
         heading_fonts = createFontStyles( 'heading' )
 
         style = body_fonts + heading_fonts
+        # generate a bunch of random indents for the random width articles
         for j in range( 0, 10) :
             for i in range( 0, 100) :
-                style += r'article:nth-of-type({}) .article-rnd p:nth-of-type({}){{ padding-left: {}%; }}\n'.format(j, i, random.randint(0,50) )
+                style += "article:nth-of-type({}) .article-rnd p:nth-of-type({}){{ padding-left: {}%; }}\n".format(j, i, random.randint(0,50) )
         style_tag = book_html.new_tag( "style" )
         style_tag.string = style;
         book_html.body.insert( 0, style_tag )
@@ -161,22 +162,23 @@ def formatDocument( content, idx ):
 
     for style in soup.head.find_all( 'style' ):
         replaced = re.sub("{", "{\n", style.string) # force everything on its own line.
-        replaced = re.sub("(?!;)}", ";}\n", replaced) # sometimes the semicolon is missing. fix that.
+        replaced = re.sub("(?!;)\n+}", ";}\n", replaced) # sometimes the semicolon is missing. fix that.
         replaced = re.sub("([;|}])", "\g<1>\n", replaced) # more new lines
+        replaced = re.sub("\s?@import.*", "", replaced )
+        replaced = re.sub("(\s?.+:.+)}", "\g<1>\n}", replaced )
         lines = re.split("\n+", replaced)
         output = ''
         for line in lines:
-            if( line.endswith( ';' ) ):
+            if re.match( "\s?.+:.+", line ):
                 # remove all css attributes that are not italic/bold
                 statement = line.strip()
-                if ( statement.startswith( 'font-weight' ) or statement.startswith( 'font-style' ) ):
+                if ( 'font-weight' in statement or 'font-style' in statement ):
                     output += "\n" + line
             else:
                 if "{" in line:
                     line = '#article-' + str( idx ) + " " + line # prefix with article id
                 output += "\n" + line
         style.string = output
-        style[ 'scoped' ] = 'scoped' # scoped does work in Weasyprint fortunately
         wrapper.insert( 0, style )
 
     return wrapper
@@ -224,7 +226,7 @@ def rndLogos( soup, idx ):
     # if an article spans multiple pages all pages (potentially) have some logos
     ps = soup.select( 'p' )
     logos = getFiles( pathlib.Path.cwd() / 'lib/logos', 'png' )
-    num_items = int( len( ps ) / 4 )
+    num_items = int( len( ps ) / 3 )
     picked = random.choices( ps, k = num_items )
 
     for p in picked:
@@ -232,7 +234,7 @@ def rndLogos( soup, idx ):
         p[ 'class' ] = 'haslogo logo-' + str( i ); # class to target with css
         logo = random.choice( logos )
         style = r'.article-{} .logo-{}:before{{ background-image: url({}); left: {}%; top: {}%; }}'.format( idx, i, logo, random.randint(-30,130),  random.randint(0,100) )
-        style_tag = soup.new_tag("style")
+        style_tag = soup.new_tag( "style" )
         # style_tag[ 'scoped' ] = 'scoped'
         style_tag.string = style;
         p.insert( 0, style_tag )
