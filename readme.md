@@ -14,23 +14,10 @@ https://weasyprint.readthedocs.io/en/stable/install.html
 
 ### Mac
 On mac you'll have to install some stuff with Homebrew, so read the guide.
-We had a problem with a Cairo version, so we had to force a version with
-```pip install cairocf==0.9.0```
 
-Then:
+Install the requirements from file:
 
-``` pip install WeasyPrint ```
-
-And install the other dependencies
-
-``` pip install pathlib beautifulsoup4 ```
-
-We had locale errors on some machines. Set locale with:
-```
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-```
-or add those to the shells .rc file
+```pip install -r requirements.txt```
 
 ## Usage
 
@@ -81,6 +68,18 @@ Clean the input html and generate a Pdf
 ## Resources
 https://www.w3.org/TR/css-page-3/#cascading-and-page-context
 https://www.smashingmagazine.com/2015/01/designing-for-print-with-css/
+
+## Troubleshooting
+
+We had a problem with a Cairo version, so we had to force a version with
+```pip install cairocf==0.9.0```
+
+We had locale errors on some machines. Set locale with:
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+or add those to the shells .rc file
 
 ## Fonts
 - Todo. Add links to font authors
